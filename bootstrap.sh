@@ -10,7 +10,8 @@ trap 'echo "An error occurred in $(basename "$0") at line $LINENO. Exiting..." >
 #------------------------------------------------------------------------------#
 # PURPOSE:                                                                     #
 # - Install essential tools for KeePassXC and qutebrowser.                     #
-# - Copy KeePassXC AppImage and database from local repo to $HOME.             #
+# - Copy KeePassXC AppImage from local repo to $HOME/.local/bin.               #
+# - KeePassXC database remains in the local repo's assets/ directory.          #
 # - Install MegaSync client.                                                   #
 # - Guide user to manually set up KeePassXC & MegaSync.                        #
 # - User will then manually run install-system.sh from this repo's scripts dir.#
@@ -43,11 +44,11 @@ MEGASYNC_FEDORA_VERSION="42" # Example: SET THIS TO 42, 43, etc.
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")" # This will be the directory where fedora-setup is cloned, e.g. ~/programming/fedora-setup
 LOCAL_ASSETS_DIR="${SCRIPT_DIR}/assets"
 KEEPASSXC_APPIMAGE_NAME="KeePassXC.AppImage"
-KEEPASSXC_DB_NAME="MyPasswords.kdbx"
+KEEPASSXC_DB_NAME="MyPasswords.kdbx" # Expected name in assets/
 
 KEEPASSXC_APPIMAGE_DEST_DIR_REL="\$HOME/.local/bin"
 KEEPASSXC_APPIMAGE_DEST_NAME="KeePassXC.AppImage"
-KEEPASSXC_DB_DEST_DIR_REL="\$HOME/Documents"
+# KEEPASSXC_DB_DEST_DIR_REL is no longer used for copying DB
 
 MEGASYNC_RPM="megasync-Fedora_${MEGASYNC_FEDORA_VERSION}.x86_64.rpm"
 MEGASYNC_URL="https://mega.nz/linux/repo/Fedora_${MEGASYNC_FEDORA_VERSION}/x86_64/${MEGASYNC_RPM}"
@@ -75,7 +76,7 @@ if [ ! -d "$USER_HOME_DIR" ]; then
 fi
 
 KEEPASSXC_APPIMAGE_DEST_DIR_ABS="${USER_HOME_DIR}/.local/bin"
-KEEPASSXC_DB_DEST_DIR_ABS="${USER_HOME_DIR}/Documents"
+# KEEPASSXC_DB_DEST_DIR_ABS is no longer used for copying DB
 
 echo "--- Phase 1: Bootstrap Initiated (from ${SCRIPT_DIR}) ---"
 echo "Running as root, for user: $SUDO_USER_NAME (Home: $USER_HOME_DIR)"
@@ -88,28 +89,27 @@ echo "Core dependencies installed."
 # --- Setup KeePassXC ---
 echo "Setting up KeePassXC..."
 KEEPASSXC_APPIMAGE_SOURCE="${LOCAL_ASSETS_DIR}/${KEEPASSXC_APPIMAGE_NAME}"
-KEEPASSXC_DB_SOURCE="${LOCAL_ASSETS_DIR}/${KEEPASSXC_DB_NAME}"
+KEEPASSXC_DB_SOURCE="${LOCAL_ASSETS_DIR}/${KEEPASSXC_DB_NAME}" # Path to DB in assets
 
 if [ ! -f "$KEEPASSXC_APPIMAGE_SOURCE" ]; then
   error_exit "KeePassXC AppImage not found at $KEEPASSXC_APPIMAGE_SOURCE. Check ${LOCAL_ASSETS_DIR}."
 fi
-if [ ! -f "$KEEPASSXC_DB_SOURCE" ]; then
+if [ ! -f "$KEEPASSXC_DB_SOURCE" ]; then # Check if database exists in assets
   error_exit "KeePassXC database not found at $KEEPASSXC_DB_SOURCE. Check ${LOCAL_ASSETS_DIR}."
 fi
 
-echo "Creating destination directories (if they don't exist)..."
+echo "Creating destination directory for AppImage (if it doesn't exist)..."
 sudo -u "$SUDO_USER_NAME" mkdir -p "$KEEPASSXC_APPIMAGE_DEST_DIR_ABS"
-sudo -u "$SUDO_USER_NAME" mkdir -p "$KEEPASSXC_DB_DEST_DIR_ABS"
+# No longer creating KEEPASSXC_DB_DEST_DIR_ABS for the database
 
 echo "Copying KeePassXC AppImage to $KEEPASSXC_APPIMAGE_DEST_DIR_ABS/${KEEPASSXC_APPIMAGE_DEST_NAME}..."
 cp "$KEEPASSXC_APPIMAGE_SOURCE" "$KEEPASSXC_APPIMAGE_DEST_DIR_ABS/${KEEPASSXC_APPIMAGE_DEST_NAME}"
 chmod +x "$KEEPASSXC_APPIMAGE_DEST_DIR_ABS/${KEEPASSXC_APPIMAGE_DEST_NAME}"
 chown "$SUDO_USER_NAME:$SUDO_USER_NAME" "$KEEPASSXC_APPIMAGE_DEST_DIR_ABS/${KEEPASSXC_APPIMAGE_DEST_NAME}"
 
-echo "Copying KeePassXC database to $KEEPASSXC_DB_DEST_DIR_ABS/${KEEPASSXC_DB_NAME}..."
-cp "$KEEPASSXC_DB_SOURCE" "$KEEPASSXC_DB_DEST_DIR_ABS/${KEEPASSXC_DB_NAME}"
-chown "$SUDO_USER_NAME:$SUDO_USER_NAME" "$KEEPASSXC_DB_DEST_DIR_ABS/${KEEPASSXC_DB_NAME}"
-echo "KeePassXC setup complete."
+# --- Database is NOT copied ---
+echo "KeePassXC database ($KEEPASSXC_DB_NAME) will be used from: $KEEPASSXC_DB_SOURCE"
+echo "KeePassXC AppImage setup complete. Database remains in repository assets."
 
 # --- MegaSync Installation ---
 echo "Installing MegaSync for Fedora ${MEGASYNC_FEDORA_VERSION}..."
@@ -147,7 +147,9 @@ echo "2. Launch KeePassXC:"
 echo "   Command: ${KEEPASSXC_APPIMAGE_DEST_NAME}"
 echo ""
 echo "3. Open your database:"
-echo "   Path: $KEEPASSXC_DB_DEST_DIR_REL/${KEEPASSXC_DB_NAME}"
+echo "   The database file is located within your cloned 'fedora-setup' repository."
+echo "   Path: ${KEEPASSXC_DB_SOURCE}"
+echo "   (Which is: ${SCRIPT_DIR}/assets/${KEEPASSXC_DB_NAME})"
 echo ""
 echo "4. Retrieve your MegaSync credentials from KeePassXC."
 echo ""
