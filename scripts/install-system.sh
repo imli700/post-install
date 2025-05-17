@@ -33,7 +33,7 @@ ACTUAL_REPO_ROOT="$(dirname "$SCRIPT_DIR_SYSTEM_INSTALL")"
 
 packages=(
   acpi android-tools brightnessctl calibre clang curl dictd dnf-plugins-core duf
-  fd-find flatpak fuse-libs fzf git grim libnotify libva libva-utils libreoffice
+  fd-find flatpak fuse-libs fzf git grim hunspell-en-us libnotify libva libva-utils libreoffice
   lua5.1-devel luarocks lxqt-policykit mako mozilla-openh264 mpv mscore-fonts
   mupdf neovim network-manager-applet pavucontrol prename python3-pip
   p7zip p7zip-plugins qbittorrent qutebrowser ripgrep rofi-wayland slurp swappy
