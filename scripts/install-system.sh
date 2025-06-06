@@ -38,7 +38,7 @@ packages=(
   mupdf neovim network-manager-applet pavucontrol prename python3-pip
   p7zip p7zip-plugins qbittorrent qutebrowser ripgrep rofi-wayland slurp swappy
   tlp tmux unrar unzip vimiv vlc wget wf-recorder wshowkeys xdg-user-dirs xournalpp
-  zathura zathura-plugins-all xclip # Added xclip for SSH key copying in README
+  zathura zathura-plugins-all xclip
 )
 
 # --- Helper Functions ---
@@ -157,7 +157,7 @@ if [ ${#failed_packages[@]} -ne 0 ]; then
   echo "#####################################################"
   echo ""
 else
-  echo "All specified DNF packages installed successfully or were already present (or skipped due to issues)."
+  echo "All specified DNF packages installed successfully or were already present."
 fi
 echo "--- DNF Package Installation Phase Complete ---"
 
