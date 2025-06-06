@@ -36,7 +36,7 @@ packages=(
   fd-find flatpak fuse-libs fzf git grim hunspell-en-us libnotify libva libva-utils libreoffice
   lua5.1-devel luarocks lxqt-policykit mako mozilla-openh264 mpv mscore-fonts
   mupdf neovim network-manager-applet pavucontrol prename python3-pip
-  p7zip p7zip-plugins qbittorrent qutebrowser ripgrep rofi-wayland slurp swappy
+  p7zip p7zip-plugins qbittorrent qutebrowser ranger ripgrep rofi-wayland slurp swappy
   tlp tmux unrar unzip vimiv vlc wget wf-recorder wshowkeys xdg-user-dirs xournalpp
   zathura zathura-plugins-all xclip
 )
