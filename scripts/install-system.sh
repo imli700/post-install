@@ -37,7 +37,7 @@ packages=(
   lua5.1-devel luarocks lxqt-policykit mako mozilla-openh264 mpv mscore-fonts
   mupdf neovim network-manager-applet pavucontrol prename python3-pip
   p7zip p7zip-plugins qbittorrent qutebrowser ranger ripgrep rofi-wayland slurp swappy
-  tlp tmux unrar unzip vimiv vlc wget wf-recorder wshowkeys xdg-user-dirs xournalpp
+  tlp tmux unrar unzip vimiv vlc wdisplays wget wf-recorder wshowkeys xdg-user-dirs xournalpp
   zathura zathura-plugins-all xclip
 )
 
