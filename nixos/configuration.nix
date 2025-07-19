@@ -8,6 +8,10 @@
     ./hardware-configuration.nix
   ];
 
+  # By gemini
+  hardware.enableRedistributableFirmware = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   # --- Bootloader (systemd-boot is recommended for UEFI) ---
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -34,8 +38,11 @@
     isNormalUser = true;
     description = "imli700";
     # Add user to the 'wheel' group for sudo access and 'networkmanager' to manage connections.
-    extraGroups = [ "wheel" "networkmanager" ];
+    extraGroups = [ "wheel" "networkmanager" "videa" "input" ];
   };
+
+  # By gemini
+  services.xserver.displayManager.gdm.enable = true;
 
   # --- Graphical Environment (Sway) ---
   programs.sway = {
@@ -45,7 +52,7 @@
   };
   # Enable PipeWire for audio. It's the modern standard.
   sound.enable = true;
-  hardware.pulseaudio.enable = false; # Disable pulseaudio in favor of pipewire
+  services.pulseaudio.enable = false; # Disable pulseaudio in favor of pipewire
   security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
@@ -59,16 +66,15 @@
   services.blueman.enable = true; # A graphical bluetooth manager
 
   # --- Hardware Acceleration (for your AMD Integrated GPU) ---
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
+    enable32Bit = true;
     extraPackages = with pkgs; [
       libva-utils # For va-info utility
+      amdvlk
+      rocmPackages.clr
     ];
   };
-  # Enable VA-API (Video Acceleration API)
-  hardware.vaapi.enable = true;
 
   # --- Allow Unfree Packages ---
   # This is required for packages like megasync.
@@ -87,7 +93,7 @@
     fd # Replaces fd-find
     fzf
     p7zip
-    perl-rename # Replaces 'prename'
+    rename # Replaces 'prename'
     ripgrep
     unrar
     unzip
@@ -96,7 +102,7 @@
 
     # Development
     clang
-    (lua51.withPackages (ps: [ ps.luarocks ])) # Lua 5.1 with luarocks
+    (lua5_1.withPackages (ps: [ ps.luarocks ])) # Lua 5.1 with luarocks
 
     # Wayland/Sway Ecosystem
     grim # Screenshots
@@ -112,6 +118,7 @@
 
     # Applications
     android-tools
+    flatpak
     calibre
     dictd
     flatpak
@@ -121,27 +128,26 @@
     # Multimedia & Codecs
     vlc
     mpv
-    gstreamer
-    gst_all_plugins # A comprehensive set of gstreamer plugins
+    gst_all_1.gstreamer
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-ugly
+    gst_all_1.gst-libav
+    gst_all_1.gst-vaapi
     libva # VA-API library (pulled in by hardware.vaapi.enable)
-    (zathura.override { # zathura-plugins-all equivalent
-      plugins = with zathuraPlugins; [
-        pdf-mupdf
-        ps
-        djvu
-        cb
-      ];
-    })
+    zathura
     xournalpp
     libnotify # For sending desktop notifications from scripts
 
     # Fonts
     noto-fonts
-    noto-fonts-cjk
+    noto-fonts-cjk-sans
 
     noto-fonts-emoji
-    (nerdfonts.override { fonts = [ "FiraCode" "JetBrainsMono" ]; }) # Example Nerd Fonts
-    mscore-fonts
+    nerd-fonts.fira-code
+    nerd-fonts.jetbrains-mono
+    corefonts
 
     # Proprietary Apps
     megasync
@@ -157,5 +163,5 @@
   # settings for stateful data, like file locations and database versions,
   # are taken. It's perfectly fine and recommended to leave this value
   # matching the release of Nixpkgs you're using.
-  system.stateVersion = "23.11";
+  system.stateVersion = "25.05";
 }
