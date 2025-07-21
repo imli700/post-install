@@ -22,34 +22,36 @@ ACTUAL_REPO_ROOT="$(dirname "$SCRIPT_DIR_SYSTEM_INSTALL")"
 
 # --- Package List (Official Repos & AUR) ---
 packages=(
-    # --- System & Utilities ---
-    acpi android-tools brightnessctl curl dictd duf fd fzf git hunspell-en_us
-    libnotify perl-rename python-pip p7zip ripgrep tlp tmux unrar unzip xclip
-    xdg-user-dirs fwupd flatpak
+  # --- System & Utilities ---
+  acpi android-tools brightnessctl curl dictd duf fd fzf git hunspell-en_us
+  libnotify perl-rename python-pip p7zip ripgrep tlp tmux unrar unzip xclip
+  xdg-user-dirs fwupd flatpak
 
-    # --- Media, Documents & Fonts ---
-    calibre libreoffice-fresh mpv mupdf qbittorrent vlc zathura zathura-pdf-mupdf
-    xournalpp
-    ttf-ms-fonts # AUR
+  # --- Media, Documents & Fonts ---
+  calibre libreoffice-fresh mpv mupdf qbittorrent vlc zathura zathura-pdf-mupdf
+  xournalpp
+  ttf-ms-fonts # AUR
+  nerd-fonts
 
-    # --- Development & Editors ---
-    clang lua51 luarocks
-    neovim # ADDED: The actual editor
+  # --- Development & Editors ---
+  clang lua51 luarocks
+  neovim # ADDED: The actual editor
+  wezterm
 
-    # --- UI, Sway & Related Tools ---
-    grim mako network-manager-applet pavucontrol polkit-kde-agent
-    ranger rofi slurp swappy wf-recorder
-    nwg-displays # Maintained alternative to wdisplays
-    wshowkeys-git # AUR
+  # --- UI, Sway & Related Tools ---
+  grim mako network-manager-applet pavucontrol polkit-kde-agent
+  ranger rofi slurp swappy wf-recorder
+  nwg-displays  # Maintained alternative to wdisplays
+  wshowkeys-git # AUR
 
-    # --- Key Applications (from AUR or repos) ---
-    qutebrowser
-    megasync-bin # AUR
-    anki-bin # AUR
-    wl-mirror-git # AUR
+  # --- Key Applications (from AUR or repos) ---
+  qutebrowser
+  megasync-bin  # AUR
+  anki-bin      # AUR
+  wl-mirror-git # AUR
 
-    # --- Hardware Acceleration (AMD) ---
-    libva-mesa-driver mesa-vdpau libva-utils vulkan-radeon
+  # --- Hardware Acceleration (AMD) ---
+  libva-mesa-driver mesa-vdpau libva-utils vulkan-radeon
 )
 
 # --- Helper Functions ---
@@ -72,13 +74,12 @@ if [ ! -d "$USER_HOME_DIR" ]; then
   error_exit "Home directory for user $SUDO_USER_NAME not found: $USER_HOME_DIR"
 fi
 
-
 echo "--- Main Installation Initiated (from ${SCRIPT_DIR_SYSTEM_INSTALL}) ---"
 echo "Repository Root: ${ACTUAL_REPO_ROOT}"
 echo "Running as root, for user: $SUDO_USER_NAME"
 
 # --- Ensure yay is installed ---
-if ! command -v yay &> /dev/null; then
+if ! command -v yay &>/dev/null; then
   echo "AUR helper 'yay' not found. Installing..."
   sudo pacman -S --noconfirm --needed git base-devel
   sudo -u "$SUDO_USER_NAME" sh -c '
@@ -106,7 +107,7 @@ echo "All specified packages installed successfully."
 # --- Add Flathub Remote ---
 echo "Adding Flathub remote for Flatpak..."
 if command -v flatpak &>/dev/null; then
-    sudo -u "$SUDO_USER_NAME" flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || echo "Warning: Failed to add Flathub remote."
+  sudo -u "$SUDO_USER_NAME" flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo || echo "Warning: Failed to add Flathub remote."
 fi
 
 # --- Firmware Updates ---
