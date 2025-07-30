@@ -24,7 +24,7 @@ ACTUAL_REPO_ROOT="$(dirname "$SCRIPT_DIR_SYSTEM_INSTALL")"
 packages=(
   # --- System & Utilities ---
   acpi android-tools brightnessctl curl dictd duf fd fzf git hunspell-en_us
-  libnotify perl-rename python-pip p7zip ripgrep tlp tmux unrar unzip xclip
+  libnotify perl-rename python-pip p7zip ripgrep tlp unrar unzip xclip
   xdg-user-dirs fwupd flatpak
 
   # --- Media, Documents & Fonts ---
