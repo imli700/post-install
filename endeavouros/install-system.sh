@@ -43,6 +43,7 @@ packages=(
   ranger rofi slurp swappy wf-recorder
   nwg-displays  # Maintained alternative to wdisplays
   wshowkeys-git # AUR
+  sworkstyle
 
   # --- Key Applications (from AUR or repos) ---
   qutebrowser
