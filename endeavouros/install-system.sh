@@ -25,13 +25,14 @@ packages=(
   # --- System & Utilities ---
   acpi android-tools brightnessctl curl dictd duf fd fzf git hunspell-en_us
   libnotify perl-rename python-pip p7zip ripgrep tlp unrar unzip xclip
-  xdg-user-dirs fwupd flatpak
+  xdg-user-dirs fwupd flatpak swaylock
 
   # --- Media, Documents & Fonts ---
   calibre libreoffice-fresh mpv mupdf qbittorrent vlc zathura zathura-pdf-mupdf
   xournalpp
   ttf-ms-fonts # AUR
   nerd-fonts
+  vimiv
 
   # --- Development & Editors ---
   clang lua51 luarocks
