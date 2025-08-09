@@ -33,6 +33,7 @@ packages=(
   ttf-ms-fonts # AUR
   nerd-fonts
   vimiv
+  yt-dlp
 
   # --- Development & Editors ---
   clang lua51 luarocks
