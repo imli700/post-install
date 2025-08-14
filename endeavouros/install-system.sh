@@ -47,6 +47,8 @@ packages=(
   nwg-displays  # Maintained alternative to wdisplays
   wshowkeys-git # AUR
   sworkstyle
+  texlive-core
+  texlive-latexextra
 
   # --- Key Applications (from AUR or repos) ---
   qutebrowser
@@ -87,7 +89,7 @@ if ! command -v yay &>/dev/null; then
   echo "AUR helper 'yay' not found. Installing..."
   sudo pacman -S --noconfirm --needed git base-devel
   sudo -u "$SUDO_USER_NAME" sh -c '
-    git clone https://aur.archlinux.org/yay.git /tmp/yay && \
+  git clone https://aur.archlinux.org/yay.git /tmp/yay && \
     cd /tmp/yay && \
     makepkg -si --noconfirm && \
     cd / && \
