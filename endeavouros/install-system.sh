@@ -39,6 +39,7 @@ packages=(
   clang lua51 luarocks
   neovim # ADDED: The actual editor
   wezterm
+  kitty
 
   # --- UI, Sway & Related Tools ---
   grim mako network-manager-applet pavucontrol polkit-kde-agent
