@@ -1,11 +1,10 @@
-# configure-dotfiles.sh
 #!/usr/bin/env bash
 set -euo pipefail
 trap 'echo "Error in ${0##*/} at line $LINENO" >&2; exit 1' ERR
 
-# Minimal, robust dotfiles checkout using a bare repo (adapted from your original script)
+# Robust dotfiles checkout using a bare repo
 DOTFILES_REPO="git@github.com:imli700/dotfiles.git"
-GIT_DIR="$HOME/.cfg"
+GIT_DIR="$HOME/dotfiles"
 WORK_TREE="$HOME"
 BACKUP_DIR="$HOME/.config-backup-$(date +%Y%m%d-%H%M%S)"
 
@@ -20,30 +19,49 @@ if [ ! -d "$GIT_DIR" ]; then
   git clone --bare "$DOTFILES_REPO" "$GIT_DIR" || error_exit "Failed to clone dotfiles repo"
 fi
 
-# helper for running git with our bare repo
+# Helper alias for running git with our bare repo
 git_dotfiles() {
   git --git-dir="$GIT_DIR" --work-tree="$WORK_TREE" "$@"
 }
 
-# Backup pre-existing conflicting files
-info "Backing up existing dotfiles that would conflict"
-mkdir -p "$BACKUP_DIR"
-# get the list of files the checkout would overwrite
-for file in $(git --git-dir="$GIT_DIR" --work-tree="$WORK_TREE" checkout 2>&1 | grep -E "\s+\w" || true); do
-  # sanitized fallback: ignore parsing errors
-  :
-done
+info "Detecting and backing up any pre-existing conflicting files..."
 
-# Perform checkout (force safe steps)
-info "Checking out dotfiles"
-git_dotfiles checkout || {
-  info "Backing up conflicts and retrying checkout"
+# Isolate the command that is expected to fail to avoid triggering pipefail
+checkout_output=$(git_dotfiles checkout 2>&1 || true)
+
+# Now, safely parse the captured output to find the list of conflicting files.
+conflicts=$(echo "${checkout_output}" | grep -E "^\s" | awk '{print $1}')
+
+if [ -n "$conflicts" ]; then
+  info "The following files conflict with the dotfiles repo and will be moved:"
+  echo "$conflicts"
   mkdir -p "$BACKUP_DIR"
-  git_dotfiles checkout 2>&1 | grep -E "\s+\w" | awk '{print $1}' | xargs -I{} bash -c 'mv "$HOME/{}" "$BACKUP_DIR/" 2>/dev/null || true'
-  git_dotfiles checkout || error_exit "Checkout failed after backup"
-}
 
+  echo "$conflicts" | while IFS= read -r file; do
+    if [ -e "$HOME/$file" ] || [ -L "$HOME/$file" ]; then # THIS LINE IS NOW CORRECT
+      mkdir -p "$(dirname "$BACKUP_DIR/$file")"
+      mv "$HOME/$file" "$BACKUP_DIR/$file"
+    fi
+  done
+  info "Backup of conflicting files complete. They are stored in: $BACKUP_DIR"
+fi
+
+info "Forcing checkout of dotfiles..."
+# Now, perform the checkout using the --force flag to overwrite any remaining issues.
+if ! git_dotfiles checkout -f; then
+  error_exit "Dotfiles checkout failed even after backing up conflicts. Manual intervention required."
+fi
+
+info "Dotfiles checkout successful."
 git_dotfiles config status.showUntrackedFiles no
 
-info "Dotfiles configured. Backups saved to $BACKUP_DIR"
+info "Dotfiles configuration complete!"
+info "###################################################################################"
+info "#                     AUTOMATED SETUP IS COMPLETE!                                #"
+info "###################################################################################"
+info ""
+info "Please REBOOT now to apply all changes and launch your new environment."
+info ""
+info "###################################################################################"
+
 exit 0

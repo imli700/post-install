@@ -1,11 +1,9 @@
-# install-user-apps.sh
 #!/usr/bin/env bash
 set -euo pipefail
 trap 'echo "Error in ${0##*/} at line $LINENO" >&2; exit 1' ERR
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-USER_NAME="${SUDO_USER:-$USER}"
-USER_HOME="/home/$USER_NAME"
+CARGO_HOME="$HOME/.cargo"
 
 info() { echo "[INFO] $*"; }
 error_exit() {
@@ -13,33 +11,48 @@ error_exit() {
   exit 1
 }
 
-info "Running user-apps installer as $USER_NAME (yay-first policy)"
+info "--- User Application Setup Initiated (running as $(whoami)) ---"
 
-# Ensure yay exists (should have been bootstrapped earlier)
-if ! command -v yay >/dev/null 2>&1; then
-  error_exit "yay is not installed; aborting. Please run the system installer first to bootstrap yay."
-fi
+# --- Skipping FNM/Node.js installation ---
+info "--- Skipping FNM/Node.js installation ---"
 
-# Example user-level packages
-USER_PACKAGES=(
-  fnm rustup # keep what you had
-  # add more user-level packages here
-)
 
-# Install packages using yay as the unprivileged user (yay will sudo for system packages)
-if [ ${#USER_PACKAGES[@]} -gt 0 ]; then
-  info "Installing user packages via yay (user: $USER_NAME)"
-  yay -S --noconfirm --needed "${USER_PACKAGES[@]}" || error_exit "Failed to install user packages via yay"
-fi
+# --- Rust (via rustup) ---
+install_rust() {
+  info "--- Configuring Rust via rustup ---"
+  if ! command -v rustup &> /dev/null; then
+    error_exit "rustup command not found, system install may have failed."
+  fi
 
-# call the dotfiles script (run as the user)
-NEXT_SCRIPT="$SCRIPT_DIR/configure-dotfiles.sh"
-if [ -f "$NEXT_SCRIPT" ] && [ -x "$NEXT_SCRIPT" ]; then
-  info "Running dotfiles configuration"
-  "$NEXT_SCRIPT"
+  info "Ensuring .cargo directory exists and adding it to PATH..."
+  # THE ROBUST FIX: Manually create the directory and add it to the script's PATH.
+  # This removes any dependency on rustup's specific behavior for directory creation.
+  mkdir -p "$CARGO_HOME/bin"
+  export PATH="$CARGO_HOME/bin:$PATH"
+
+  info "Setting default rust toolchain..."
+  # Now rustup can install binaries into the directory we already created and added to PATH.
+  rustup default stable
+  
+  info "Installing common Rust components (clippy, rustfmt)..."
+  rustup component add clippy rustfmt
+  rustup update
+  info "--- Rust Setup Finished ---"
+}
+
+
+# --- Main Execution ---
+install_rust
+
+# --- Call Next Script ---
+info "--- User Application Setup Complete ---"
+info "Proceeding to Dotfiles Configuration..."
+next_script_dotfiles="${SCRIPT_DIR}/configure-dotfiles.sh"
+if [ -f "$next_script_dotfiles" ] && [ -x "$next_script_dotfiles" ]; then
+  "$next_script_dotfiles"
 else
-  warn "$NEXT_SCRIPT not found or not executable."
+  error_exit "$next_script_dotfiles not found or not executable. Cannot proceed."
 fi
 
-info "install-user-apps.sh finished."
+info "install-user-apps.sh finished successfully."
 exit 0
