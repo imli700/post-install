@@ -66,6 +66,7 @@ packages=(
   neovim
   wezterm
   kitty
+  lazygit
 
   # --- UI, Sway & Related Tools ---
   grim mako network-manager-applet pavucontrol polkit-kde-agent
