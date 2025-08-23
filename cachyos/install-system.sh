@@ -56,7 +56,7 @@ packages=(
   # --- Media, Documents & Fonts ---
   calibre libreoffice-fresh mpv mupdf qbittorrent vlc zathura zathura-pdf-mupdf
   xournalpp
-  ttf-ms-fonts # AUR
+  ttf-ms-fonts                              # AUR
   ttf-jetbrains-mono-nerd ttf-firacode-nerd # Specific Nerd Fonts
   vimiv
   yt-dlp
@@ -75,6 +75,7 @@ packages=(
   sworkstyle
   texlive-core
   texlive-latexextra
+  nerd-fonts
 
   # --- Key Applications ---
   qutebrowser
