@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+# install-user-apps.sh
+
 set -euo pipefail
 trap 'echo "Error in ${0##*/} at line $LINENO" >&2; exit 1' ERR
 
@@ -16,11 +19,10 @@ info "--- User Application Setup Initiated (running as $(whoami)) ---"
 # --- Skipping FNM/Node.js installation ---
 info "--- Skipping FNM/Node.js installation ---"
 
-
 # --- Rust (via rustup) ---
 install_rust() {
   info "--- Configuring Rust via rustup ---"
-  if ! command -v rustup &> /dev/null; then
+  if ! command -v rustup &>/dev/null; then
     error_exit "rustup command not found, system install may have failed."
   fi
 
@@ -33,13 +35,12 @@ install_rust() {
   info "Setting default rust toolchain..."
   # Now rustup can install binaries into the directory we already created and added to PATH.
   rustup default stable
-  
+
   info "Installing common Rust components (clippy, rustfmt)..."
   rustup component add clippy rustfmt
   rustup update
   info "--- Rust Setup Finished ---"
 }
-
 
 # --- Main Execution ---
 install_rust

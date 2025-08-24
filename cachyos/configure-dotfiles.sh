@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+# configure-dotfiles.sh
+
 set -euo pipefail
 trap 'echo "Error in ${0##*/} at line $LINENO" >&2; exit 1' ERR
 
