@@ -70,6 +70,7 @@ packages=(
   wezterm
   kitty
   lazygit
+  fnm
 
   # --- UI, Sway & Related Tools ---
   grim mako network-manager-applet pavucontrol polkit-kde-agent
