@@ -68,7 +68,7 @@ packages=(
   vimiv
   yt-dlp
   zathura
-  zathura-pdf-mupdf
+  zathura-pdf-poppler
   zathura-ps
   zathura-djvu
   zathura-cb
