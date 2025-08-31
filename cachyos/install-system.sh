@@ -57,12 +57,21 @@ packages=(
   xdg-user-dirs fwupd flatpak swaylock rate-mirrors
 
   # --- Media, Documents & Fonts ---
-  calibre libreoffice-fresh mpv mupdf qbittorrent vlc zathura zathura-pdf-mupdf
+  calibre
+  libreoffice-fresh
+  mpv
+  mupdf
+  qbittorrent
+  vlc
   xournalpp
-  ttf-ms-fonts                              # AUR
-  ttf-jetbrains-mono-nerd ttf-firacode-nerd # Specific Nerd Fonts
+  ttf-ms-fonts
   vimiv
   yt-dlp
+  zathura
+  zathura-pdf-mupdf
+  zathura-ps
+  zathura-djvu
+  zathura-cb
 
   # --- Development & Editors ---
   clang lua51 luarocks rustup # Add rustup to provide cargo
