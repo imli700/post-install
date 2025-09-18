@@ -80,6 +80,7 @@ packages=(
   kitty
   lazygit
   fnm
+  tree-sitter-cli
 
   # --- UI, Sway & Related Tools ---
   grim mako network-manager-applet pavucontrol polkit-kde-agent
