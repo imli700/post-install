@@ -91,6 +91,7 @@ packages=(
   texlive-core
   texlive-latexextra
   nerd-fonts
+  magick
 
   # --- Key Applications ---
   qutebrowser
