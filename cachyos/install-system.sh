@@ -75,7 +75,7 @@ packages=(
 
   # --- Development & Editors ---
   clang lua51 luarocks rustup # Add rustup to provide cargo
-  vim
+  gvim
   neovim
   wezterm
   kitty
