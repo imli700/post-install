@@ -54,7 +54,7 @@ packages=(
   # --- System & Utilities ---
   acpi android-tools brightnessctl curl dictd duf fd fzf git hunspell-en_us
   libnotify perl-rename python-pip 7zip ripgrep tlp unrar unzip xclip
-  xdg-user-dirs fwupd flatpak swaylock rate-mirrors peco wl-clipboard clipse
+  xdg-user-dirs fwupd flatpak swaylock rate-mirrors peco wl-clipboard clipse gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav
 
   # --- Media, Documents & Fonts ---
   calibre
