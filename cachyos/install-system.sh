@@ -51,57 +51,140 @@ pacman -Rns --noconfirm power-profiles-daemon || true
 
 # --- Package List (Corrected and made specific) ---
 packages=(
-  # --- System & Utilities ---
-  acpi android-tools brightnessctl curl dictd duf fd fzf git hunspell-en_us
-  libnotify perl-rename python-pip 7zip ripgrep tlp unrar unzip xclip
-  xdg-user-dirs fwupd flatpak swaylock rate-mirrors peco wl-clipboard clipse gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav
+  # ==========================================
+  # SYSTEM, HARDWARE & DRIVERS
+  # ==========================================
+  # AMD Hardware Acceleration
+  libva-mesa-driver
+  mesa-vdpau
+  libva-utils
+  vulkan-radeon
+  # System Tools & Power Management
+  acpi          # Battery/power status
+  tlp           # Advanced power management
+  fwupd         # Firmware update daemon
+  brightnessctl # Backlight control
+  rate-mirrors  # Arch mirror ranking
+  flatpak       # Sandboxed application packaging
+  xdg-user-dirs # Manages standard user directories (~/Downloads, etc.)
+  # Networking
+  network-manager-applet # GUI applet for NetworkManager
 
-  # --- Media, Documents & Fonts ---
-  calibre
+  # ==========================================
+  # WAYLAND / SWAY DESKTOP ENVIRONMENT
+  # ==========================================
+  # Core UI & Window Management
+  sworkstyle       # Sway workspace auto-renaming
+  nwg-displays     # Display management/configuration
+  rofi             # Application launcher
+  swaylock         # Screen locker
+  polkit-gnome     # Authentication agent (Note: You usually only need one...)
+  polkit-kde-agent # ...you can probably remove either this or the GNOME one.
+  # Clipboard & Notifications
+  wl-clipboard # Wayland clipboard utilities
+  clipse       # Wayland clipboard manager
+  xclip        # X11 clipboard fallback (useful for Xwayland)
+  mako         # Wayland notification daemon
+  libnotify    # Notification library (sends notifications to mako)
+  # Screen Capture & Recording
+  grim        # Wayland screenshot tool
+  slurp       # Select a region in Wayland (pairs with grim)
+  swappy      # Wayland screenshot editing tool
+  wf-recorder # Wayland screen recorder
+  # Specialized Wayland Tools (AUR)
+  wl-mirror-git # AUR: Output mirror for Wayland
+  wshowkeys-git # AUR: Displays keypresses on screen
+
+  # ==========================================
+  # TERMINAL, DEVELOPMENT & CLI TOOLS
+  # ==========================================
+  # Terminal Emulators
+  kitty
+  wezterm
+  # Editors
+  neovim
+  gvim
+  # Development & Languages
+  git
+  lazygit # Terminal UI for git
+  clang   # C/C++ compiler
+  rustup  # Provides cargo and rustc
+  lua51
+  luarocks        # Lua package manager
+  fnm             # Fast Node Manager
+  tree-sitter-cli # Parsing tool (great for Neovim)
+  # CLI Utilities & Search
+  curl
+  fd             # Better 'find'
+  fzf            # Fuzzy finder
+  ripgrep        # Better 'grep'
+  duf            # Better 'df' (disk usage)
+  peco           # Simplistic interactive filtering tool
+  perl-rename    # Advanced file renaming
+  dictd          # Dictionary client/server
+  hunspell-en_us # Spell checking
+  magick         # ImageMagick CLI image manipulation
+  python-pip     # Python package manager
+  # File Managers & Archives
+  ranger # CLI file manager
+  7zip
+  unrar
+  unzip
+
+  # ==========================================
+  # MEDIA, AUDIO & VIDEO
+  # ==========================================
+  # Media Players & Viewers
+  mpv   # CLI video player
+  vlc   # GUI video player
+  vimiv # Image viewer with vim-like keybindings
+  # Audio
+  pavucontrol # PulseAudio/PipeWire volume control GUI
+  # GStreamer (Multimedia Framework Plugins)
+  gst-plugins-base
+  gst-plugins-good
+  gst-plugins-bad
+  gst-plugins-ugly
+  gst-libav
+  # Media Downloaders
+  yt-dlp # YouTube and video downloader
+
+  # ==========================================
+  # DOCUMENTS, OFFICE & FONTS
+  # ==========================================
+  # Office & PDF
   libreoffice-fresh
-  mpv
-  mupdf
-  qbittorrent
-  vlc
-  xournalpp
-  ttf-ms-fonts
-  vimiv
-  yt-dlp
+  mupdf     # Lightweight PDF viewer
+  xournalpp # PDF annotation and note-taking
+  # Zathura (Document Viewer & Backends)
   zathura
   zathura-pdf-poppler
   zathura-ps
   zathura-djvu
-  zathura-cb
-
-  # --- Development & Editors ---
-  clang lua51 luarocks rustup # Add rustup to provide cargo
-  gvim
-  neovim
-  wezterm
-  kitty
-  lazygit
-  fnm
-  tree-sitter-cli
-
-  # --- UI, Sway & Related Tools ---
-  grim mako network-manager-applet pavucontrol polkit-kde-agent
-  ranger rofi slurp swappy wf-recorder
-  nwg-displays
-  wshowkeys-git # AUR
-  sworkstyle
-  texlive-core
+  zathura-cb # Comic book support
+  # E-Books & Typesetting
+  calibre      # E-book manager
+  texlive-core # LaTeX
   texlive-latexextra
-  nerd-fonts
-  magick
+  # Fonts
+  nerd-fonts   # Developer fonts with icons
+  ttf-ms-fonts # Microsoft core fonts (Arial, Times New Roman, etc.)
 
-  # --- Key Applications ---
-  qutebrowser
-  megasync-bin  # AUR
-  anki-bin      # AUR
-  wl-mirror-git # AUR
+  # ==========================================
+  # INTERNET & KEY APPLICATIONS
+  # ==========================================
+  qutebrowser  # Keyboard-focused web browser
+  qbittorrent  # Torrent client
+  megasync-bin # AUR: MEGA cloud storage sync
+  anki-bin     # AUR: Flashcard learning software
 
-  # --- Hardware Acceleration (AMD) ---
-  libva-mesa-driver mesa-vdpau libva-utils vulkan-radeon
+  # ==========================================
+  # GAMING & PERIPHERALS
+  # ==========================================
+  input-remapper # Core virtual gamepad/keyboard mapping tool
+  libratbag      # Daemon for configuring gaming mice
+  piper          # GUI for libratbag (Mouse DPI/RGB config)
+  xorg-xhost     # Utility to allow root GUI apps on Wayland (useful for debugging/Cemu)
 )
 
 info "Installing all system and application packages via yay..."
