@@ -174,10 +174,13 @@ packages=(
   # ==========================================
   # INTERNET & KEY APPLICATIONS
   # ==========================================
-  qutebrowser  # Keyboard-focused web browser
-  qbittorrent  # Torrent client
-  megasync-bin # AUR: MEGA cloud storage sync
-  anki-bin     # AUR: Flashcard learning software
+  qutebrowser       # Keyboard-focused web browser
+  qbittorrent       # Torrent client
+  megasync-bin      # AUR: MEGA cloud storage sync
+  anki-bin          # AUR: Flashcard learning software
+  bitwarden-cli     # Password manager
+  keyutils          # Provides keyctl, used to cache your session key securely in the kernel keyring
+  python-tldextract # Python library the userscript uses to parse domain names
 
   # ==========================================
   # GAMING & PERIPHERALS
