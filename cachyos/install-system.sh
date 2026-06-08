@@ -138,6 +138,7 @@ packages=(
   mpv   # CLI video player
   vlc   # GUI video player
   vimiv # Image viewer with vim-like keybindings
+  playerctl
   # Audio
   pavucontrol # PulseAudio/PipeWire volume control GUI
   # GStreamer (Multimedia Framework Plugins)
