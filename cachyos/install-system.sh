@@ -179,6 +179,8 @@ packages=(
   megasync-bin      # AUR: MEGA cloud storage sync
   anki-bin          # AUR: Flashcard learning software
   bitwarden-cli     # Password manager
+  rbw               # Password manager
+  jq                # To use with rbw to use in qutebrowser
   keyutils          # Provides keyctl, used to cache your session key securely in the kernel keyring
   python-tldextract # Python library the userscript uses to parse domain names
 
