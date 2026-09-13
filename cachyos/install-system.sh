@@ -125,6 +125,7 @@ packages=(
   hunspell-en_us # Spell checking
   magick         # ImageMagick CLI image manipulation
   python-pip     # Python package manager
+  jq             # Needed for notification "collection" feature
   # File Managers & Archives
   ranger # CLI file manager
   7zip
