@@ -41,8 +41,13 @@ if ! command -v yay >/dev/null 2>&1; then
 fi
 
 # --- System Update ---
+# NOTE: yay's non-interactive flags are --nocleanmenu/--nodiffmenu/--noeditmenu/--noupgrademenu
+# (the previous --editmenu=false/--diffmenu=false forms are not real yay options and were
+# silently ignored, so this could have paused waiting for input on a fresh AUR build).
+YAY_NONINTERACTIVE_FLAGS=(--nocleanmenu --nodiffmenu --noeditmenu --noupgrademenu)
+
 info "Updating system (yay -Syu)..."
-sudo -E -u "$SUDO_USER_NAME" yay -Syu --noconfirm --editmenu=false --diffmenu=false || warn "System update failed. Continuing."
+sudo -E -u "$SUDO_USER_NAME" yay -Syu --noconfirm "${YAY_NONINTERACTIVE_FLAGS[@]}" || warn "System update failed. Continuing."
 
 # --- Conflict Resolution ---
 info "Removing conflicting power-profiles-daemon to install TLP..."
@@ -180,8 +185,7 @@ packages=(
   megasync-bin      # AUR: MEGA cloud storage sync
   anki-bin          # AUR: Flashcard learning software
   bitwarden-cli     # Password manager
-  rbw               # Password manager
-  jq                # To use with rbw to use in qutebrowser
+  rbw               # Password manager (jq, listed above, is also needed to use rbw with qutebrowser)
   keyutils          # Provides keyctl, used to cache your session key securely in the kernel keyring
   python-tldextract # Python library the userscript uses to parse domain names
 
@@ -195,9 +199,38 @@ packages=(
 )
 
 info "Installing all system and application packages via yay..."
-# Added --noeditmenu and --nodiffmenu to ensure non-interaction
-sudo -E -u "$SUDO_USER_NAME" yay -S --noconfirm --needed --editmenu=false --diffmenu=false "${packages[@]}" || error_exit "Failed to install one or more packages."
-info "Package installation complete."
+
+failed_packages=()
+
+# Try the fast path first: one big transaction lets yay/pacman resolve everything
+# together, which is quicker and avoids repeated dependency resolution.
+if sudo -E -u "$SUDO_USER_NAME" yay -S --noconfirm --needed "${YAY_NONINTERACTIVE_FLAGS[@]}" "${packages[@]}"; then
+  :
+else
+  warn "Batch install failed or was only partially successful."
+  warn "Retrying package-by-package so a single bad/AUR-broken package doesn't block everything else..."
+
+  for pkg in "${packages[@]}"; do
+    info "Installing: $pkg"
+    if ! sudo -E -u "$SUDO_USER_NAME" yay -S --noconfirm --needed "${YAY_NONINTERACTIVE_FLAGS[@]}" "$pkg"; then
+      warn "Failed to install package: $pkg (continuing with the rest)"
+      failed_packages+=("$pkg")
+    fi
+  done
+fi
+
+if [ "${#failed_packages[@]}" -gt 0 ]; then
+  warn "-----------------------------------------------------------------"
+  warn "The following ${#failed_packages[@]} package(s) failed to install and were skipped:"
+  for pkg in "${failed_packages[@]}"; do
+    warn "  - $pkg"
+  done
+  warn "Check the log above for the specific errors, then install these manually with:"
+  warn "  yay -S <package>"
+  warn "-----------------------------------------------------------------"
+else
+  info "Package installation complete."
+fi
 
 # --- Add Flathub Remote ---
 info "Adding Flathub remote for Flatpak..."

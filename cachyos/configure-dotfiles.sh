@@ -29,28 +29,37 @@ git_dotfiles() {
 
 info "Detecting and backing up any pre-existing conflicting files..."
 
-# Isolate the command that is expected to fail to avoid triggering pipefail
-checkout_output=$(git_dotfiles checkout 2>&1 || true)
+# Ask git directly which files the repo actually tracks, rather than parsing the
+# human-readable error text from a failed checkout. That text is not a stable
+# interface -- its wording/formatting can change between git versions or locales,
+# which would silently break the conflict detection above. Listing the tracked
+# files ourselves and checking each against $HOME is deterministic.
+mapfile -t tracked_files < <(git_dotfiles ls-tree -r --name-only HEAD)
 
-# Now, safely parse the captured output to find the list of conflicting files.
-conflicts=$(echo "${checkout_output}" | grep -E "^\s" | awk '{print $1}')
+conflicts=()
+for file in "${tracked_files[@]}"; do
+  if [ -e "$HOME/$file" ] || [ -L "$HOME/$file" ]; then
+    conflicts+=("$file")
+  fi
+done
 
-if [ -n "$conflicts" ]; then
-  info "The following files conflict with the dotfiles repo and will be moved:"
-  echo "$conflicts"
+if [ "${#conflicts[@]}" -gt 0 ]; then
+  info "The following ${#conflicts[@]} file(s) conflict with the dotfiles repo and will be moved:"
+  printf '  %s\n' "${conflicts[@]}"
   mkdir -p "$BACKUP_DIR"
 
-  echo "$conflicts" | while IFS= read -r file; do
-    if [ -e "$HOME/$file" ] || [ -L "$HOME/$file" ]; then # THIS LINE IS NOW CORRECT
-      mkdir -p "$(dirname "$BACKUP_DIR/$file")"
-      mv "$HOME/$file" "$BACKUP_DIR/$file"
-    fi
+  for file in "${conflicts[@]}"; do
+    mkdir -p "$(dirname "$BACKUP_DIR/$file")"
+    mv "$HOME/$file" "$BACKUP_DIR/$file"
   done
   info "Backup of conflicting files complete. They are stored in: $BACKUP_DIR"
+else
+  info "No conflicting files detected."
 fi
 
-info "Forcing checkout of dotfiles..."
-# Now, perform the checkout using the --force flag to overwrite any remaining issues.
+info "Checking out dotfiles..."
+# -f is kept as a safety net for anything the pre-check above didn't catch
+# (e.g. a directory that needs to become a symlink, or vice versa).
 if ! git_dotfiles checkout -f; then
   error_exit "Dotfiles checkout failed even after backing up conflicts. Manual intervention required."
 fi

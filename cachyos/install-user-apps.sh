@@ -10,12 +10,6 @@ CARGO_HOME="$HOME/.cargo"
 ZSHRC_FILE="$HOME/.zshrc" # Define path to .zshrc
 
 info() { echo "[INFO] $*"; }
-error_exit() {
-  echo "[ERROR] $*" >&2
-  exit 1
-}
-
-info() { echo "[INFO] $*"; }
 warn() { echo "[WARN] $*" >&2; }
 error_exit() {
   echo "[ERROR] $*" >&2
@@ -28,7 +22,8 @@ info "--- User Application Setup Initiated (running as $(whoami)) ---"
 install_fnm_and_node() {
   info "--- Configuring FNM and installing Node.js LTS ---"
   if ! command -v fnm &>/dev/null; then
-    error_exit "fnm command not found, system install may have failed."
+    warn "fnm command not found (system package install may have failed). Skipping Node.js setup."
+    return 0
   fi
 
   # Check if fnm is already configured in .zshrc to prevent duplicates
@@ -71,7 +66,8 @@ install_fnm_and_node() {
 install_rust() {
   info "--- Configuring Rust via rustup ---"
   if ! command -v rustup &>/dev/null; then
-    error_exit "rustup command not found, system install may have failed."
+    warn "rustup command not found (system package install may have failed). Skipping Rust setup."
+    return 0
   fi
 
   info "Ensuring .cargo directory exists and adding it to PATH..."
@@ -79,11 +75,11 @@ install_rust() {
   export PATH="$CARGO_HOME/bin:$PATH"
 
   info "Setting default rust toolchain..."
-  rustup default stable
+  rustup default stable || warn "Failed to set default rust toolchain. Continuing."
 
   info "Installing common Rust components (clippy, rustfmt)..."
-  rustup component add clippy rustfmt
-  rustup update
+  rustup component add clippy rustfmt || warn "Failed to install one or more rust components. Continuing."
+  rustup update || warn "rustup update failed. Continuing."
   info "--- Rust Setup Finished ---"
 }
 
