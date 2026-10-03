@@ -154,7 +154,8 @@ packages=(
   gst-plugins-ugly
   gst-libav
   # Media Downloaders
-  yt-dlp # YouTube and video downloader
+  yt-dlp  # YouTube and video downloader
+  readest # Book reader that syncs progress
 
   # ==========================================
   # DOCUMENTS, OFFICE & FONTS
