@@ -74,6 +74,9 @@ packages=(
   xdg-user-dirs # Manages standard user directories (~/Downloads, etc.)
   # Networking
   network-manager-applet # GUI applet for NetworkManager
+  # To make readest work
+  gnome-keyring
+  libsecret
 
   # ==========================================
   # WAYLAND / SWAY DESKTOP ENVIRONMENT
