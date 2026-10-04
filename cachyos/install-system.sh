@@ -41,9 +41,6 @@ if ! command -v yay >/dev/null 2>&1; then
 fi
 
 # --- System Update ---
-# NOTE: yay's non-interactive flags are --nocleanmenu/--nodiffmenu/--noeditmenu/--noupgrademenu
-# (the previous --editmenu=false/--diffmenu=false forms are not real yay options and were
-# silently ignored, so this could have paused waiting for input on a fresh AUR build).
 YAY_NONINTERACTIVE_FLAGS=(--nocleanmenu --nodiffmenu --noeditmenu --noupgrademenu)
 
 info "Updating system (yay -Syu)..."
@@ -51,10 +48,9 @@ sudo -E -u "$SUDO_USER_NAME" yay -Syu --noconfirm "${YAY_NONINTERACTIVE_FLAGS[@]
 
 # --- Conflict Resolution ---
 info "Removing conflicting power-profiles-daemon to install TLP..."
-# Use pacman directly for removal. The || true prevents script exit if it's not installed.
 pacman -Rns --noconfirm power-profiles-daemon || true
 
-# --- Package List (Corrected and made specific) ---
+# --- Package List ---
 packages=(
   # ==========================================
   # SYSTEM, HARDWARE & DRIVERS
@@ -74,7 +70,7 @@ packages=(
   xdg-user-dirs # Manages standard user directories (~/Downloads, etc.)
   # Networking
   network-manager-applet # GUI applet for NetworkManager
-  # To make readest work
+  # Secret Service / Keyring (Required for Readest & password storage)
   gnome-keyring
   libsecret
 
@@ -82,12 +78,16 @@ packages=(
   # WAYLAND / SWAY DESKTOP ENVIRONMENT
   # ==========================================
   # Core UI & Window Management
-  sworkstyle       # Sway workspace auto-renaming
-  nwg-displays     # Display management/configuration
-  rofi             # Application launcher
-  swaylock         # Screen locker
-  polkit-gnome     # Authentication agent (Note: You usually only need one...)
-  polkit-kde-agent # ...you can probably remove either this or the GNOME one.
+  sworkstyle   # Sway workspace auto-renaming
+  nwg-displays # Display management/configuration
+  rofi         # Application launcher
+  swaylock     # Screen locker
+  polkit-gnome # Authentication agent
+  polkit-kde-agent
+  # Desktop Portals (Fixes UI freezes, file pickers, theme query)
+  xdg-desktop-portal
+  xdg-desktop-portal-gtk
+  xdg-desktop-portal-wlr
   # Clipboard & Notifications
   wl-clipboard # Wayland clipboard utilities
   clipse       # Wayland clipboard manager
@@ -177,9 +177,12 @@ packages=(
   calibre      # E-book manager
   texlive-core # LaTeX
   texlive-latexextra
-  # Fonts
-  nerd-fonts   # Developer fonts with icons
-  ttf-ms-fonts # Microsoft core fonts (Arial, Times New Roman, etc.)
+  # Fonts (Noto fonts required for CEF/Chromium font enumeration fallback)
+  nerd-fonts
+  ttf-ms-fonts
+  noto-fonts
+  noto-fonts-cjk
+  noto-fonts-emoji
 
   # ==========================================
   # INTERNET & KEY APPLICATIONS
@@ -189,9 +192,9 @@ packages=(
   megasync-bin      # AUR: MEGA cloud storage sync
   anki-bin          # AUR: Flashcard learning software
   bitwarden-cli     # Password manager
-  rbw               # Password manager (jq, listed above, is also needed to use rbw with qutebrowser)
-  keyutils          # Provides keyctl, used to cache your session key securely in the kernel keyring
-  python-tldextract # Python library the userscript uses to parse domain names
+  rbw               # Password manager
+  keyutils          # Provides keyctl
+  python-tldextract # Domain name parser for userscripts
 
   # ==========================================
   # GAMING & PERIPHERALS
@@ -199,15 +202,13 @@ packages=(
   input-remapper # Core virtual gamepad/keyboard mapping tool
   libratbag      # Daemon for configuring gaming mice
   piper          # GUI for libratbag (Mouse DPI/RGB config)
-  xorg-xhost     # Utility to allow root GUI apps on Wayland (useful for debugging/Cemu)
+  xorg-xhost     # Utility to allow root GUI apps on Wayland
 )
 
 info "Installing all system and application packages via yay..."
 
 failed_packages=()
 
-# Try the fast path first: one big transaction lets yay/pacman resolve everything
-# together, which is quicker and avoids repeated dependency resolution.
 if sudo -E -u "$SUDO_USER_NAME" yay -S --noconfirm --needed "${YAY_NONINTERACTIVE_FLAGS[@]}" "${packages[@]}"; then
   :
 else
@@ -236,6 +237,10 @@ else
   info "Package installation complete."
 fi
 
+# --- Update Font Cache ---
+info "Updating system font cache (fc-cache)..."
+fc-cache -f || warn "fc-cache failed to refresh."
+
 # --- Add Flathub Remote ---
 info "Adding Flathub remote for Flatpak..."
 if command -v flatpak &>/dev/null; then
@@ -254,6 +259,19 @@ if [ "$(hostnamectl --static)" != "$TARGET_HOSTNAME" ]; then
   hostnamectl set-hostname "$TARGET_HOSTNAME" || warn "Failed to set hostname."
 else
   info "Hostname is already set."
+fi
+
+# --- Configure System Locale ---
+info "Configuring system locale (en_IN.UTF-8, en_US.UTF-8)..."
+if [ -f /etc/locale.gen ]; then
+  sed -i -E 's/^#\s*(en_IN\.UTF-8 UTF-8)/\1/' /etc/locale.gen
+  sed -i -E 's/^#\s*(en_US\.UTF-8 UTF-8)/\1/' /etc/locale.gen
+  locale-gen || warn "locale-gen encountered errors."
+fi
+
+if [ ! -f /etc/locale.conf ] || ! grep -q "LANG=" /etc/locale.conf; then
+  echo "LANG=en_IN.UTF-8" >/etc/locale.conf
+  echo "LC_ALL=en_IN.UTF-8" >>/etc/locale.conf
 fi
 
 # --- Enable TLP ---
