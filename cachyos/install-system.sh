@@ -73,6 +73,7 @@ packages=(
   # Secret Service / Keyring (Required for Readest & password storage)
   gnome-keyring
   libsecret
+  python-pycurl # Needed for wiiudownloader
 
   # ==========================================
   # WAYLAND / SWAY DESKTOP ENVIRONMENT
