@@ -197,6 +197,7 @@ packages=(
   keyutils          # Provides keyctl
   python-tldextract # Domain name parser for userscripts
   glide-browser-bin # Keyboard-focused firefox fork
+  veikk-tablet-bin  # Veikk tablet application
 
   # ==========================================
   # GAMING & PERIPHERALS
